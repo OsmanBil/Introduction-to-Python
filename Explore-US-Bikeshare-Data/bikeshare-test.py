@@ -30,7 +30,7 @@ def get_filters():
         day = input("Which day? Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday: ").lower()
         while day not in days:
             day = input("Please enter a valid day: ").lower()
-
+    print('-'*40)
     return city, month, day
 
 
@@ -61,15 +61,80 @@ def load_data(city, month=None, day=None):
 
     return df
 
+def time_stats(df):
+    """Displays statistics on the most frequent times of travel."""
+
+    print('\nCalculating The Most Frequent Times of Travel...\n')
+    start_time = time.time()
+
+    # display the most common month
+    most_common_month = df['month'].mode()[0]
+    print("Most Common Month:", most_common_month)
+
+
+    # display the most common day of week
+    most_common_day_of_week = df['day_of_week'].mode()[0]
+    print("Most Common Day of Week:", most_common_day_of_week)
+
+
+    # display the most common start hour
+    df['hour'] = df['Start Time'].dt.hour
+    most_common_start_hour = df['hour'].mode()[0]
+    print("Most Common Start Hour:", most_common_start_hour)
+
+
+    print("\nThis took %s seconds." % (time.time() - start_time))
+    print('-'*40)
+
+def station_stats(df):
+    """Displays statistics on the most popular stations and trip."""
+
+    print('\nCalculating The Most Popular Stations and Trip...\n')
+    start_time = time.time()
+
+    # display most commonly used start station
+    most_common_start_station = df['Start Station'].mode()[0]
+    print("Most Commonly used start station:", most_common_start_station)
+
+    # display most commonly used end station
+    most_common_end_station = df['End Station'].mode()[0]
+    print("Most Commonly used end station:", most_common_end_station)
+
+    # display most frequent combination of start station and end station trip
+    df['Start_End_Combination'] = df['Start Station'] + " to " + df['End Station']
+    most_common_start_end_combination = df['Start_End_Combination'].mode()[0]
+    print("Most frequent combination of start station and end station trip:", most_common_start_end_combination)
+
+    print("\nThis took %s seconds." % (time.time() - start_time))
+    print('-'*40)
+
+def trip_duration_stats(df):
+    """Displays statistics on the total and average trip duration."""
+
+    print('\nCalculating Trip Duration...\n')
+    start_time = time.time()
+
+    # display total travel time
+    total_travel_time = df['Trip Duration'].sum()
+    print("Total travel time:", total_travel_time, "seconds")
+
+    # display mean travel time
+    mean_travel_time = df['Trip Duration'].mean()
+    print("Mean travel time:", mean_travel_time, "seconds")
+
+    print("\nThis took %s seconds." % (time.time() - start_time))
+    print('-'*40)
 
 
 def main():
     while True:
         city, month, day = get_filters()
         df = load_data(city, month, day)
-        
-        print(df.head())  # Zeigt die ersten Zeilen der Daten als schnelle Überprüfung
 
+        time_stats(df)
+        station_stats(df)
+        trip_duration_stats(df)
+        
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
             break
