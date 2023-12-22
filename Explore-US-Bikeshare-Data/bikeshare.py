@@ -38,11 +38,11 @@ def get_filters():
 
 
 def load_data(city, month=None, day=None):
-    # Überprüfen, ob die Datei existiert
+    # Check if the file exists
     filename = CITY_DATA[city]
     if not os.path.isfile(filename):
-        print(f"Die Datei {filename} wurde nicht gefunden. Bitte überprüfe den Dateipfad und den Namen.")
-        return None  # oder handle den Fehler, wie du möchtest
+        print(f"The file {filename} was not found. Please check the file path and name.")
+        return None
     
     # Load data file into a dataframe
     df = pd.read_csv(CITY_DATA[city])
@@ -58,7 +58,7 @@ def load_data(city, month=None, day=None):
     if month:
         # Use the index of the months list to get the corresponding int
         months = ['january', 'february', 'march', 'april', 'may', 'june']
-        month = months.index(month) + 1  # +1 because the index is zero-based
+        month = months.index(month) + 1
         df = df[df['month'] == month]
 
         # Filter by day of the week if applicable
@@ -165,6 +165,19 @@ def user_stats(df):
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
+def display_raw_data(df):
+    """Displays 5 lines of raw data upon user request."""
+    print('\nWould you like to view individual trip data?')
+    start_loc = 0
+    while True:
+        raw_data = input("Type 'yes' to view more raw data, 'no' to stop: ").lower()
+        if raw_data == 'yes':
+            print(df.iloc[start_loc:start_loc + 5])
+            start_loc += 5
+        elif raw_data == 'no':
+            break
+        else:
+            print("Please type 'yes' or 'no'.")
 
 
 def main():
@@ -176,6 +189,7 @@ def main():
         station_stats(df)
         trip_duration_stats(df)
         user_stats(df)
+        display_raw_data(df)
         
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
