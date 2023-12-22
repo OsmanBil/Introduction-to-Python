@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import time
+import os
 
 CITY_DATA = { 'chicago': 'chicago.csv', 'new york city': 'new_york_city.csv', 'washington': 'washington.csv' }
 
@@ -37,6 +38,12 @@ def get_filters():
 
 
 def load_data(city, month=None, day=None):
+    # Überprüfen, ob die Datei existiert
+    filename = CITY_DATA[city]
+    if not os.path.isfile(filename):
+        print(f"Die Datei {filename} wurde nicht gefunden. Bitte überprüfe den Dateipfad und den Namen.")
+        return None  # oder handle den Fehler, wie du möchtest
+    
     # Load data file into a dataframe
     df = pd.read_csv(CITY_DATA[city])
 
@@ -125,6 +132,40 @@ def trip_duration_stats(df):
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
+def user_stats(df):
+    """Displays statistics on bikeshare users."""
+
+    print('\nCalculating User Stats...\n')
+    start_time = time.time()
+
+    # Display counts of user types
+    user_types = df['User Type'].value_counts()
+    print("Counts of user types:\n", user_types)
+
+    # Display counts of gender
+    # Check if 'Gender' column exists
+    if 'Gender' in df.columns:
+        gender_counts = df['Gender'].value_counts()
+        print("\nCounts of gender:\n", gender_counts)
+    else:
+        print("\nNo gender data to display.")
+
+    # Display earliest, most recent, and most common year of birth
+    # Check if 'Birth Year' column exists
+    if 'Birth Year' in df.columns:
+        earliest_year = int(df['Birth Year'].min())
+        most_recent_year = int(df['Birth Year'].max())
+        most_common_year = int(df['Birth Year'].mode()[0])
+        print("\nEarliest year of birth:", earliest_year)
+        print("Most recent year of birth:", most_recent_year)
+        print("Most common year of birth:", most_common_year)
+    else:
+        print("\nNo birth year data to display.")
+
+    print("\nThis took %s seconds." % (time.time() - start_time))
+    print('-'*40)
+
+
 
 def main():
     while True:
@@ -134,6 +175,7 @@ def main():
         time_stats(df)
         station_stats(df)
         trip_duration_stats(df)
+        user_stats(df)
         
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
